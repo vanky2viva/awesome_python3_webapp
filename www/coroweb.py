@@ -1,6 +1,7 @@
-# -*- coding: utf-8 *-
+# -*- coding: utf-8 -*-
 
-import asyncio, os, inspect, logging,functools
+
+import asyncio, os, inspect, logging, functools
 
 from urllib import parse
 
@@ -20,13 +21,14 @@ def get(path):
         wrapper.__route__ = path
         return wrapper 
     return decorator
+
 def post(path):
     '''
     Define decorator @post('/path')
     '''
     def decorator(func):
         @functools.wraps(func)
-        def wrapper(*args,**kw):
+        def wrapper(*args, **kw):
             return func(*args, **kw)
         wrapper.__method__ = 'POST'
         wrapper.__route__ = path
@@ -84,7 +86,8 @@ class RequestHandler(object):
         self._named_kw_args = get_named_kw_args(fn)
         self._required_kw_args = get_required_kw_args(fn)
 
-    async def __call__(self, request):
+    @asyncio.coroutine
+    def __call__(self, request):
         kw = None
         if self._has_var_kw_arg or self._has_named_kw_args or self._required_kw_args:
             if request.method == 'POST':
@@ -92,12 +95,12 @@ class RequestHandler(object):
                     return web.HTTPBadRequest('Missing Content-Type.')
                 ct = request.content_type.lower()
                 if ct.startswith('application/json'):
-                    params = await request.json()
+                    params = yield from request.json()
                     if not isinstance(params, dict):
                         return web.HTTPBadRequest('JSON body must be object.')
                     kw = params
                 elif ct.startswith('application/x-www-form-urlencoded') or ct.startswith('multipart/form-data'):
-                    params = await request.post()
+                    params = yield from request.post()
                     kw = dict(**params)
                 else:
                     return web.HTTPBadRequest('Unsupported Content-Type: %s' % request.content_type)
@@ -131,7 +134,7 @@ class RequestHandler(object):
                     return web.HTTPBadRequest('Missing argument: %s' % name)
         logging.info('call with args: %s' % str(kw))
         try:
-            r = await self._func(**kw)
+            r = yield from self._func(**kw)
             return r
         except APIError as e:
             return dict(error=e.error, data=e.data, message=e.message)
