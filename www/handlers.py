@@ -9,7 +9,7 @@ import markdown2
 from aiohttp import web
 
 from coroweb import get, post
-from apis import APIValueError, APIResourrceNotFoundError, APIError
+from apis import APIValueError, APIResourceNotFoundError, APIError
 
 from models import User, Comment, Blog, next_id
 from config import configs
@@ -25,7 +25,7 @@ def user2cookie(user, max_age):
     # build cookie string by: id-expires-sha1
     expires = str(int(time.time() + max_age))
     s = '%s-%s-%s-%s' % (user.id, user.passwd, expires, _COOKIE_KEY)
-    L = [user.id, expires, hashlib.sha1(s.encode('utf-8')).hexdigest]
+    L = [user.id, expires, hashlib.sha1(s.encode('utf-8')).hexdigest()]
     return '-'.join(L)
 
 
