@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 '''
 async web application.
 '''
@@ -18,7 +17,8 @@ from config import configs
 import orm
 from coroweb import add_routes, add_static
 
-from handlers   import cookie2user, COOKIE_NAME
+from handlers import cookie2user, COOKIE_NAME
+
 def init_jinja2(app, **kw):
     logging.info('init jinja2...')
     options = dict(
@@ -64,7 +64,7 @@ def auth_factory(app, handler):
         if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
             return web.HTTPFound('/signin')
         return (yield from handler(request))
-    return auth 
+    return auth
 
 @asyncio.coroutine
 def data_factory(app, handler):
