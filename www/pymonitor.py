@@ -1,12 +1,12 @@
-#-*- coding:utf-8 -*-
+# -*- coding: utf-8 -*-
 
-import os, sys, time,subprocess
+import os, sys, time, subprocess
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 def log(s):
-    print('[Monitor] %s' %s)
+    print('[Monitor] %s' % s)
 
 class MyFileSystemEventHander(FileSystemEventHandler):
 
@@ -19,18 +19,18 @@ class MyFileSystemEventHander(FileSystemEventHandler):
             log('Python source file changed: %s' %event.src_path)
             self.restart()
 
-command = ['echo','ok']
+command = ['echo', 'ok']
 process = None
 
 def kill_process():
     global process
     if process:
-        log('Kill process [%s]...' %process.pid)
+        log('Kill process [%s]...' % process.pid)
         process.kill()
         process.wait()
-        log('Process enden with code %s.' % process.returncode) 
+        log('Process enden with code %s.' % process.returncode)
         process = None
-    
+
 def start_process():
     global process, command
     log('Start process %s...' % ' '.join(command))
@@ -42,7 +42,7 @@ def restart_process():
 
 def start_watch(path, callback):
     observer = Observer()
-    observer.schedule(MyFileSystemEventHander(restart_process),path,recursive=True)
+    observer.schedule(MyFileSystemEventHander(restart_process), path, recursive=True)
     observer.start()
     log('Watching directory %s...' % path)
     start_process()
