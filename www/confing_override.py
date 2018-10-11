@@ -4,7 +4,7 @@
 Override configurations.
 '''
 
-__author__ = 'Michael Liao'
+__author__ = 'Vanky'
 
 configs = {
     'db': {
